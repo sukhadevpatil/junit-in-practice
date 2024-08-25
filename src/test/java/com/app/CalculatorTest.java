@@ -1,5 +1,6 @@
 package com.app;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,11 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Test Math operation in calculator class")
 class CalculatorTest {
+    static Calculator calculator;
+    @BeforeAll
+    static void setUp() {
+        calculator = new Calculator();
+    }
 
     @DisplayName("Test 4/2 = 2")
     @Test
     void testDivisionIntegers() {
-        Calculator calculator = new Calculator();
         int result = calculator.divisionIntegers(4, 2);
         assertEquals(2, result, "Division did not work correctly, check input values");
     }
@@ -33,5 +38,19 @@ class CalculatorTest {
     @Test
     void testDivideByZero() {
         fail("not implemented yet");
+    }
+
+    @Test
+    void divisionByZero() {
+        int dividend = 4;
+        int divisor = 0;
+
+        String expectedExceptionMessage = "/ by zero";
+
+        ArithmeticException actualException = assertThrows(ArithmeticException.class, () -> {
+           calculator.divisionIntegers(dividend, divisor);
+        }, "Division by zero should have thrown an Arithmetic exception");
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage(), "Unexpected exception message");
     }
 }
