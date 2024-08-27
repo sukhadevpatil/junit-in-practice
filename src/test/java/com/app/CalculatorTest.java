@@ -1,18 +1,27 @@
 package com.app;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Test Math operation in calculator class")
 class CalculatorTest {
     static Calculator calculator;
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void beforeEachTestMethod() {
+        System.out.println("Executing beforeEach method");
         calculator = new Calculator();
+    }
+
+    @AfterEach
+    void afterEachTestMethod() {
+        System.out.println("Executing AfterEach method");
+        calculator = null;
     }
 
     @DisplayName("Test 4/2 = 2")
@@ -24,7 +33,7 @@ class CalculatorTest {
 
     @DisplayName("Test 7-2 = 5")
     @Test
-    void integerSubtraction() {
+    void integerSubtractionTest() {
         int minuend = 7;
         int subtrahend = 2;
         int expectedResult = 5;
@@ -53,4 +62,26 @@ class CalculatorTest {
 
         assertEquals(expectedExceptionMessage, actualException.getMessage(), "Unexpected exception message");
     }
+
+    @DisplayName("Test integer subtraction [minuend, subtrahend, expectedResult]")
+    @ParameterizedTest
+    @MethodSource
+    void integerSubtraction(int minuend, int subtrahend, int expectedResult) {
+        System.out.println("Running Test " + minuend + "-" + subtrahend + "=" + expectedResult);
+
+        int actualResult = calculator.integerSubtraction(minuend, subtrahend);
+
+        assertEquals(expectedResult, actualResult, () -> minuend + "-" + subtrahend + " did not produce " + actualResult);
+    }
+
+    private static Stream<Arguments> integerSubtraction() {
+        return Stream.of(
+          Arguments.of(33, 1, 32),
+          Arguments.of(51, 1, 50),
+          Arguments.of(101, 1, 100)
+        );
+    }
+
+
+
 }
