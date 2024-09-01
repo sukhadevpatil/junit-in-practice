@@ -1,17 +1,29 @@
 package com.appsdeveloperblog.estore.service;
 
 import com.appsdeveloperblog.estore.model.User;
+import com.appsdeveloperblog.estore.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    UserService userService;
+    @InjectMocks
+    UserServiceImpl userService;
+
+    @Mock
+    UserRepository userRepository;
+
     String firstName;
     String lastName;
     String email;
@@ -20,9 +32,8 @@ public class UserServiceTest {
 
     @BeforeEach
     void init() {
-        userService = new UserServiceImpl();
-        firstName = "Sergey";
-        lastName  = "Kargopolov";
+        firstName = "Sukhdev";
+        lastName  = "Patil";
         email = "test@test.com";
         password = "12345678";
         repeatPassword = "12345678";
@@ -31,6 +42,9 @@ public class UserServiceTest {
     @DisplayName("User object created")
     @Test
     void testCreateUser_whenUserDetailsProvided_returnsUserObject() {
+        //Arrange
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(true);
+
         // Act
         User user = userService.createUser(firstName, lastName, email, password, repeatPassword);
 
@@ -40,6 +54,8 @@ public class UserServiceTest {
         assertEquals(lastName, user.getLastName(), "User's last name is incorrect");
         assertEquals(email, user.getEmail(), "User's email is incorrect");
         assertNotNull(user.getId(), "User id is missing");
+
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
     }
 
     @DisplayName("Empty first name causes correct exception")
